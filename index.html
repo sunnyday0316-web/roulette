@@ -1,0 +1,414 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>가위바위보 룰렛</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #e8f4ff, #fff3e6);
+    font-family: "Malgun Gothic", sans-serif;
+    text-align: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 650px;
+    padding: 30px 15px;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 10px 35px rgba(0,0,0,.12);
+}
+
+h1 {
+    font-size: clamp(32px, 7vw, 48px);
+    color: #263b63;
+    margin: 5px 0 10px;
+}
+
+.subtitle {
+    font-size: 22px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.result {
+    min-height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(42px, 10vw, 65px);
+    font-weight: bold;
+    color: #e85d25;
+    margin-bottom: 15px;
+}
+
+.wheel-area {
+    position: relative;
+    width: min(82vw, 430px);
+    aspect-ratio: 1;
+    margin: 0 auto 35px;
+}
+
+/* 원판 */
+.wheel {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 8px solid white;
+
+    /*
+       0~120도: 가위
+       120~240도: 바위
+       240~360도: 보
+    */
+
+    background: conic-gradient(
+        from 0deg,
+        #ffcc55 0deg 120deg,
+        #65b9f2 120deg 240deg,
+        #ff8585 240deg 360deg
+    );
+
+    box-shadow: 0 5px 20px rgba(0,0,0,.2);
+
+    transition:
+        transform 5s cubic-bezier(.12,.65,.12,1);
+}
+
+/* 원판 글자 */
+.wheel-label {
+    position: absolute;
+    width: 120px;
+    height: 55px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(25px, 6vw, 38px);
+    font-weight: bold;
+    color: #263238;
+    text-shadow: 1px 1px 2px white;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+}
+
+/* 각 구역 중앙에 글자 배치 */
+.scissors {
+    left: 75%;
+    top: 28%;
+}
+
+.rock {
+    left: 50%;
+    top: 78%;
+}
+
+.paper {
+    left: 25%;
+    top: 28%;
+}
+
+/* 위쪽 화살표 */
+.pointer {
+    position: absolute;
+    z-index: 10;
+    top: -17px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 0;
+    height: 0;
+
+    border-left: 24px solid transparent;
+    border-right: 24px solid transparent;
+    border-top: 50px solid #333;
+
+    filter: drop-shadow(0 3px 3px rgba(0,0,0,.3));
+}
+
+/* 원판 중앙 */
+.center-circle {
+    position: absolute;
+    z-index: 5;
+    width: 55px;
+    height: 55px;
+    background: white;
+    border: 5px solid #333;
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* 버튼 */
+button {
+    display: block;
+    width: 90%;
+    max-width: 400px;
+    min-height: 85px;
+    margin: 12px auto;
+    border: none;
+    border-radius: 20px;
+    font-size: 36px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 6px 0 rgba(0,0,0,.15);
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+#spinBtn {
+    background: #ff7043;
+    color: white;
+}
+
+#resetBtn {
+    background: #397acb;
+    color: white;
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.guide {
+    font-size: 20px;
+    color: #666;
+    margin-top: 20px;
+    line-height: 1.6;
+}
+
+@media(max-width:400px) {
+    .container {
+        padding: 25px 10px;
+    }
+
+    button {
+        font-size: 30px;
+        min-height: 75px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>가위바위보 룰렛</h1>
+
+    <div class="subtitle">
+        오늘의 행운은 무엇일까요?
+    </div>
+
+    <!-- 최종 결과 -->
+    <div class="result" id="result">
+        준비!
+    </div>
+
+    <!-- 원판 -->
+    <div class="wheel-area">
+
+        <div class="pointer"></div>
+
+        <div class="wheel" id="wheel">
+
+            <div class="wheel-label scissors">가위</div>
+
+            <div class="wheel-label rock">바위</div>
+
+            <div class="wheel-label paper">보</div>
+
+        </div>
+
+        <div class="center-circle"></div>
+
+    </div>
+
+    <!-- 버튼 -->
+    <button id="spinBtn" onclick="spinWheel()">
+        돌리기
+    </button>
+
+    <button id="resetBtn" onclick="resetWheel()">
+        다시 돌리기
+    </button>
+
+    <div class="guide" id="guide">
+        돌리기 버튼을 눌러 보세요!
+    </div>
+
+</div>
+
+<script>
+
+const wheel = document.getElementById("wheel");
+const result = document.getElementById("result");
+const guide = document.getElementById("guide");
+
+const spinBtn = document.getElementById("spinBtn");
+const resetBtn = document.getElementById("resetBtn");
+
+// 원판 구역의 정확한 중앙 각도
+// CSS conic-gradient 시작점 기준
+const choices = [
+    {
+        name: "가위",
+        emoji: "✌️",
+        center: 60
+    },
+    {
+        name: "바위",
+        emoji: "✊",
+        center: 180
+    },
+    {
+        name: "보",
+        emoji: "✋",
+        center: 300
+    }
+];
+
+let currentRotation = 0;
+let isSpinning = false;
+
+function spinWheel() {
+
+    if (isSpinning) return;
+
+    isSpinning = true;
+
+    spinBtn.disabled = true;
+    resetBtn.disabled = true;
+
+    result.textContent = "두근두근!";
+    guide.textContent = "룰렛이 돌아가고 있어요!";
+
+    // 무작위로 결과 선택
+    const selectedIndex =
+        Math.floor(Math.random() * 3);
+
+    const selected = choices[selectedIndex];
+
+    /*
+       원판의 선택된 구역 중심을
+       12시 방향 화살표에 맞춘다.
+
+       가위 중심: 60도
+       바위 중심: 180도
+       보 중심: 300도
+
+       최종 회전각 = 360 - 중심각
+    */
+
+    const targetAngle =
+        (360 - selected.center) % 360;
+
+    // 현재 회전각을 0~359도로 정규화
+    const currentAngle =
+        ((currentRotation % 360) + 360) % 360;
+
+    // 목표 각도까지 필요한 회전량
+    const remainingAngle =
+        (targetAngle - currentAngle + 360) % 360;
+
+    // 5~7바퀴 회전
+    const extraTurns =
+        5 + Math.floor(Math.random() * 3);
+
+    currentRotation +=
+        extraTurns * 360 + remainingAngle;
+
+    // 원판 회전
+    wheel.style.transform =
+        `rotate(${currentRotation}deg)`;
+
+    // 회전 종료 후 결과 표시
+    wheel.addEventListener(
+        "transitionend",
+        showResult,
+        { once: true }
+    );
+
+    // 혹시 전환 이벤트가 발생하지 않는 경우 대비
+    setTimeout(() => {
+        if (isSpinning) {
+            showResult();
+        }
+    }, 5500);
+
+    function showResult() {
+
+        if (!isSpinning) return;
+
+        /*
+           실제 원판의 최종 각도를 기준으로
+           12시 방향 화살표가 가리키는 구역 판정
+        */
+
+        const finalAngle =
+            ((currentRotation % 360) + 360) % 360;
+
+        const pointerAngle =
+            (360 - finalAngle + 360) % 360;
+
+        const actualIndex =
+            Math.floor(pointerAngle / 120) % 3;
+
+        const actualResult =
+            choices[actualIndex];
+
+        // 원판 결과와 화면 결과를 동일하게 표시
+        result.textContent =
+            actualResult.emoji + " " + actualResult.name + "!";
+
+        guide.textContent =
+            "화살표가 가리키는 결과입니다!";
+
+        isSpinning = false;
+
+        spinBtn.disabled = false;
+        resetBtn.disabled = false;
+    }
+}
+
+function resetWheel() {
+
+    if (isSpinning) return;
+
+    currentRotation = 0;
+
+    wheel.style.transition = "none";
+    wheel.style.transform = "rotate(0deg)";
+
+    // 브라우저에 초기화 상태 적용
+    wheel.offsetHeight;
+
+    wheel.style.transition =
+        "transform 5s cubic-bezier(.12,.65,.12,1)";
+
+    result.textContent = "준비!";
+    guide.textContent = "돌리기 버튼을 눌러 보세요!";
+}
+
+</script>
+
+</body>
+</html>
