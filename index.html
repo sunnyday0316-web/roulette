@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>가위바위보 룰렛</title>
+<title>청팀 백팀 가위바위보 대결</title>
 
 <style>
 * {
@@ -14,67 +14,116 @@
 body {
     margin: 0;
     min-height: 100vh;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #e8f4ff, #fff3e6);
+    padding: 20px 12px;
     font-family: "Malgun Gothic", sans-serif;
     text-align: center;
+    background: linear-gradient(135deg, #e8f4ff, #fff3e6);
 }
 
 .container {
-    width: 100%;
-    max-width: 650px;
-    padding: 30px 15px;
+    max-width: 750px;
+    margin: auto;
+    padding: 25px 15px;
     background: white;
-    border-radius: 30px;
+    border-radius: 28px;
     box-shadow: 0 10px 35px rgba(0,0,0,.12);
 }
 
 h1 {
-    font-size: clamp(32px, 7vw, 48px);
+    font-size: clamp(30px, 7vw, 45px);
     color: #263b63;
     margin: 5px 0 10px;
 }
 
 .subtitle {
-    font-size: 22px;
+    font-size: 20px;
     color: #666;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
+/* 팀 점수판 */
+
+.scoreboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.team {
+    border-radius: 18px;
+    padding: 15px 8px;
+    border: 4px solid transparent;
+}
+
+.blue-team {
+    background: #e2efff;
+    color: #1458b5;
+}
+
+.white-team {
+    background: #f1f1f1;
+    color: #333;
+}
+
+.team.active {
+    border-color: #ff8b36;
+    box-shadow: 0 0 15px rgba(255,139,54,.35);
+}
+
+.team-name {
+    font-size: clamp(25px, 6vw, 34px);
+    font-weight: bold;
+}
+
+.team-result {
+    font-size: clamp(30px, 7vw, 42px);
+    font-weight: bold;
+    margin-top: 8px;
+    min-height: 55px;
+}
+
+.team-status {
+    font-size: 18px;
+    margin-top: 5px;
+}
+
+/* 차례 안내 */
+
+.turn {
+    font-size: clamp(25px, 6vw, 34px);
+    font-weight: bold;
+    color: #e85d25;
+    margin: 15px 0;
+}
+
+/* 결과 */
+
 .result {
-    min-height: 90px;
+    font-size: clamp(32px, 8vw, 55px);
+    font-weight: bold;
+    color: #e85d25;
+    min-height: 75px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: clamp(42px, 10vw, 65px);
-    font-weight: bold;
-    color: #e85d25;
-    margin-bottom: 15px;
 }
+
+/* 룰렛 */
 
 .wheel-area {
     position: relative;
     width: min(82vw, 430px);
     aspect-ratio: 1;
-    margin: 0 auto 35px;
+    margin: 25px auto 35px;
 }
 
-/* 원판 */
 .wheel {
     position: relative;
     width: 100%;
     height: 100%;
     border-radius: 50%;
     border: 8px solid white;
-
-    /*
-       0~120도: 가위
-       120~240도: 바위
-       240~360도: 보
-    */
 
     background: conic-gradient(
         from 0deg,
@@ -89,7 +138,6 @@ h1 {
         transform 5s cubic-bezier(.12,.65,.12,1);
 }
 
-/* 원판 글자 */
 .wheel-label {
     position: absolute;
     width: 120px;
@@ -97,15 +145,13 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: clamp(25px, 6vw, 38px);
+    font-size: clamp(27px, 6vw, 38px);
     font-weight: bold;
     color: #263238;
     text-shadow: 1px 1px 2px white;
-    transform: translate(-50%, -50%);
-    white-space: nowrap;
+    transform: translate(-50%,-50%);
 }
 
-/* 각 구역 중앙에 글자 배치 */
 .scissors {
     left: 75%;
     top: 28%;
@@ -121,25 +167,20 @@ h1 {
     top: 28%;
 }
 
-/* 위쪽 화살표 */
 .pointer {
     position: absolute;
     z-index: 10;
     top: -17px;
     left: 50%;
     transform: translateX(-50%);
-
     width: 0;
     height: 0;
-
     border-left: 24px solid transparent;
     border-right: 24px solid transparent;
     border-top: 50px solid #333;
-
     filter: drop-shadow(0 3px 3px rgba(0,0,0,.3));
 }
 
-/* 원판 중앙 */
 .center-circle {
     position: absolute;
     z-index: 5;
@@ -150,19 +191,20 @@ h1 {
     border-radius: 50%;
     left: 50%;
     top: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%,-50%);
 }
 
 /* 버튼 */
+
 button {
     display: block;
     width: 90%;
-    max-width: 400px;
-    min-height: 85px;
+    max-width: 420px;
+    min-height: 82px;
     margin: 12px auto;
     border: none;
     border-radius: 20px;
-    font-size: 36px;
+    font-size: clamp(27px, 6vw, 36px);
     font-weight: bold;
     cursor: pointer;
     box-shadow: 0 6px 0 rgba(0,0,0,.15);
@@ -178,31 +220,71 @@ button:active {
     color: white;
 }
 
-#resetBtn {
+#newGameBtn {
     background: #397acb;
     color: white;
 }
 
 button:disabled {
-    opacity: .6;
+    opacity: .5;
     cursor: not-allowed;
 }
 
+/* 승리 화면 */
+
+.winner-box {
+    display: none;
+    padding: 25px 10px;
+    margin-top: 20px;
+    border-radius: 22px;
+    background: linear-gradient(135deg,#fff2b5,#ffe0e0);
+    animation: pop 0.6s ease;
+}
+
+.winner-box.show {
+    display: block;
+}
+
+.winner-title {
+    font-size: clamp(32px, 8vw, 50px);
+    font-weight: bold;
+    color: #d84315;
+}
+
+.winner-message {
+    font-size: clamp(23px, 6vw, 34px);
+    font-weight: bold;
+    color: #333;
+    margin-top: 12px;
+}
+
+@keyframes pop {
+    0% { transform: scale(.5); opacity: 0; }
+    70% { transform: scale(1.08); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 .guide {
-    font-size: 20px;
+    font-size: 19px;
     color: #666;
     margin-top: 20px;
     line-height: 1.6;
 }
 
+/* 폭죽 캔버스 */
+
+#fireworks {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
 @media(max-width:400px) {
     .container {
-        padding: 25px 10px;
-    }
-
-    button {
-        font-size: 30px;
-        min-height: 75px;
+        padding: 20px 8px;
     }
 }
 </style>
@@ -210,20 +292,44 @@ button:disabled {
 
 <body>
 
+<canvas id="fireworks"></canvas>
+
 <div class="container">
 
-    <h1>가위바위보 룰렛</h1>
+    <h1>가위바위보 대결!</h1>
 
     <div class="subtitle">
-        오늘의 행운은 무엇일까요?
+        청팀과 백팀의 행운 대결
     </div>
 
-    <!-- 최종 결과 -->
+    <!-- 팀 점수판 -->
+
+    <div class="scoreboard">
+
+        <div class="team blue-team active" id="blueTeam">
+            <div class="team-name">🔵 청팀</div>
+            <div class="team-result" id="blueResult">?</div>
+            <div class="team-status" id="blueStatus">대기 중</div>
+        </div>
+
+        <div class="team white-team" id="whiteTeam">
+            <div class="team-name">⚪ 백팀</div>
+            <div class="team-result" id="whiteResult">?</div>
+            <div class="team-status" id="whiteStatus">대기 중</div>
+        </div>
+
+    </div>
+
+    <div class="turn" id="turn">
+        🔵 청팀 차례입니다!
+    </div>
+
     <div class="result" id="result">
         준비!
     </div>
 
-    <!-- 원판 -->
+    <!-- 룰렛 -->
+
     <div class="wheel-area">
 
         <div class="pointer"></div>
@@ -231,9 +337,7 @@ button:disabled {
         <div class="wheel" id="wheel">
 
             <div class="wheel-label scissors">가위</div>
-
             <div class="wheel-label rock">바위</div>
-
             <div class="wheel-label paper">보</div>
 
         </div>
@@ -242,17 +346,28 @@ button:disabled {
 
     </div>
 
-    <!-- 버튼 -->
     <button id="spinBtn" onclick="spinWheel()">
-        돌리기
+        🔄 청팀 돌리기
     </button>
 
-    <button id="resetBtn" onclick="resetWheel()">
-        다시 돌리기
+    <button id="newGameBtn" onclick="newGame()">
+        새 대결 시작
     </button>
+
+    <!-- 최종 승리 결과 -->
+
+    <div class="winner-box" id="winnerBox">
+        <div class="winner-title" id="winnerTitle">
+            🏆 청팀 승리!
+        </div>
+
+        <div class="winner-message" id="winnerMessage">
+            축하합니다!
+        </div>
+    </div>
 
     <div class="guide" id="guide">
-        돌리기 버튼을 눌러 보세요!
+        돌리기 버튼을 눌러 대결을 시작하세요!
     </div>
 
 </div>
@@ -261,108 +376,106 @@ button:disabled {
 
 const wheel = document.getElementById("wheel");
 const result = document.getElementById("result");
+const turn = document.getElementById("turn");
 const guide = document.getElementById("guide");
 
 const spinBtn = document.getElementById("spinBtn");
-const resetBtn = document.getElementById("resetBtn");
+const blueResult = document.getElementById("blueResult");
+const whiteResult = document.getElementById("whiteResult");
 
-// 원판 구역의 정확한 중앙 각도
-// CSS conic-gradient 시작점 기준
+const blueTeam = document.getElementById("blueTeam");
+const whiteTeam = document.getElementById("whiteTeam");
+
+const blueStatus = document.getElementById("blueStatus");
+const whiteStatus = document.getElementById("whiteStatus");
+
+const winnerBox = document.getElementById("winnerBox");
+const winnerTitle = document.getElementById("winnerTitle");
+const winnerMessage = document.getElementById("winnerMessage");
+
+// 원판 구간 중심 각도
 const choices = [
-    {
-        name: "가위",
-        emoji: "✌️",
-        center: 60
-    },
-    {
-        name: "바위",
-        emoji: "✊",
-        center: 180
-    },
-    {
-        name: "보",
-        emoji: "✋",
-        center: 300
-    }
+    { name: "가위", emoji: "✌️", center: 60 },
+    { name: "바위", emoji: "✊", center: 180 },
+    { name: "보", emoji: "✋", center: 300 }
 ];
 
 let currentRotation = 0;
+let currentTeam = "blue";
 let isSpinning = false;
+let gameFinished = false;
 
+let blueChoice = null;
+let whiteChoice = null;
+
+let spinTimer = null;
+
+// 현재 팀 화면 표시
+function updateTurn() {
+
+    blueTeam.classList.toggle(
+        "active", currentTeam === "blue"
+    );
+
+    whiteTeam.classList.toggle(
+        "active", currentTeam === "white"
+    );
+
+    if (currentTeam === "blue") {
+        turn.textContent = "🔵 청팀 차례입니다!";
+        spinBtn.textContent = "🔵 청팀 돌리기";
+    } else {
+        turn.textContent = "⚪ 백팀 차례입니다!";
+        spinBtn.textContent = "⚪ 백팀 돌리기";
+    }
+}
+
+// 룰렛 돌리기
 function spinWheel() {
 
-    if (isSpinning) return;
+    if (isSpinning || gameFinished) return;
 
     isSpinning = true;
-
     spinBtn.disabled = true;
-    resetBtn.disabled = true;
 
     result.textContent = "두근두근!";
     guide.textContent = "룰렛이 돌아가고 있어요!";
 
-    // 무작위로 결과 선택
+    // 목표 구역을 무작위 선택
     const selectedIndex =
         Math.floor(Math.random() * 3);
 
     const selected = choices[selectedIndex];
 
-    /*
-       원판의 선택된 구역 중심을
-       12시 방향 화살표에 맞춘다.
-
-       가위 중심: 60도
-       바위 중심: 180도
-       보 중심: 300도
-
-       최종 회전각 = 360 - 중심각
-    */
-
+    // 선택 구역의 중심을 12시 방향으로 이동
     const targetAngle =
         (360 - selected.center) % 360;
 
-    // 현재 회전각을 0~359도로 정규화
     const currentAngle =
         ((currentRotation % 360) + 360) % 360;
 
-    // 목표 각도까지 필요한 회전량
     const remainingAngle =
         (targetAngle - currentAngle + 360) % 360;
 
-    // 5~7바퀴 회전
     const extraTurns =
         5 + Math.floor(Math.random() * 3);
 
     currentRotation +=
         extraTurns * 360 + remainingAngle;
 
-    // 원판 회전
     wheel.style.transform =
         `rotate(${currentRotation}deg)`;
 
-    // 회전 종료 후 결과 표시
-    wheel.addEventListener(
-        "transitionend",
-        showResult,
-        { once: true }
-    );
+    let completed = false;
 
-    // 혹시 전환 이벤트가 발생하지 않는 경우 대비
-    setTimeout(() => {
-        if (isSpinning) {
-            showResult();
-        }
-    }, 5500);
+    function finish() {
 
-    function showResult() {
+        if (completed) return;
+        completed = true;
 
-        if (!isSpinning) return;
+        clearTimeout(spinTimer);
 
-        /*
-           실제 원판의 최종 각도를 기준으로
-           12시 방향 화살표가 가리키는 구역 판정
-        */
-
+        // 실제 원판의 최종 위치로 결과 판정
         const finalAngle =
             ((currentRotation % 360) + 360) % 360;
 
@@ -372,40 +485,348 @@ function spinWheel() {
         const actualIndex =
             Math.floor(pointerAngle / 120) % 3;
 
-        const actualResult =
-            choices[actualIndex];
+        const actualChoice = choices[actualIndex];
 
-        // 원판 결과와 화면 결과를 동일하게 표시
-        result.textContent =
-            actualResult.emoji + " " + actualResult.name + "!";
+        // 현재 팀 결과 저장
+        if (currentTeam === "blue") {
 
-        guide.textContent =
-            "화살표가 가리키는 결과입니다!";
+            blueChoice = actualChoice;
+
+            blueResult.textContent =
+                actualChoice.emoji + actualChoice.name;
+
+            blueStatus.textContent = "완료!";
+
+            // 백팀 차례로 전환
+            currentTeam = "white";
+
+            result.textContent =
+                "청팀: " + actualChoice.name;
+
+            guide.textContent =
+                "이제 백팀 차례입니다!";
+
+            updateTurn();
+
+            spinBtn.disabled = false;
+
+        } else {
+
+            whiteChoice = actualChoice;
+
+            whiteResult.textContent =
+                actualChoice.emoji + actualChoice.name;
+
+            whiteStatus.textContent = "완료!";
+
+            result.textContent =
+                "백팀: " + actualChoice.name;
+
+            // 두 팀 결과 비교
+            setTimeout(checkWinner, 700);
+        }
 
         isSpinning = false;
-
-        spinBtn.disabled = false;
-        resetBtn.disabled = false;
     }
+
+    wheel.addEventListener(
+        "transitionend",
+        finish,
+        { once: true }
+    );
+
+    spinTimer = setTimeout(finish, 5500);
 }
 
-function resetWheel() {
+// 승패 판정
+function checkWinner() {
+
+    let winner = null;
+
+    if (blueChoice.name === whiteChoice.name) {
+
+        winner = "draw";
+
+    } else if (
+        (blueChoice.name === "가위" && whiteChoice.name === "보") ||
+        (blueChoice.name === "바위" && whiteChoice.name === "가위") ||
+        (blueChoice.name === "보" && whiteChoice.name === "바위")
+    ) {
+
+        winner = "blue";
+
+    } else {
+
+        winner = "white";
+    }
+
+    gameFinished = true;
+    spinBtn.disabled = true;
+
+    blueTeam.classList.remove("active");
+    whiteTeam.classList.remove("active");
+
+    if (winner === "blue") {
+
+        winnerTitle.textContent = "🏆 청팀 승리!";
+
+        winnerMessage.textContent =
+            "축하합니다! 청팀이 이겼습니다!";
+
+        blueStatus.textContent = "🏆 승리!";
+
+        turn.textContent = "🔵 청팀이 이겼습니다!";
+
+        winnerBox.style.background =
+            "linear-gradient(135deg,#b9dcff,#e5f2ff)";
+
+        startFireworks();
+
+    } else if (winner === "white") {
+
+        winnerTitle.textContent = "🏆 백팀 승리!";
+
+        winnerMessage.textContent =
+            "축하합니다! 백팀이 이겼습니다!";
+
+        whiteStatus.textContent = "🏆 승리!";
+
+        turn.textContent = "⚪ 백팀이 이겼습니다!";
+
+        winnerBox.style.background =
+            "linear-gradient(135deg,#eeeeee,#ffffff)";
+
+        startFireworks();
+
+    } else {
+
+        winnerTitle.textContent = "🤝 무승부!";
+
+        winnerMessage.textContent =
+            "두 팀이 똑같은 결과입니다!";
+
+        blueStatus.textContent = "무승부";
+        whiteStatus.textContent = "무승부";
+
+        turn.textContent = "다시 도전해 보세요!";
+    }
+
+    winnerBox.classList.add("show");
+
+    guide.textContent =
+        "새 대결 시작 버튼을 눌러 다시 도전하세요!";
+}
+
+// 새 게임
+function newGame() {
 
     if (isSpinning) return;
 
+    clearTimeout(spinTimer);
+
     currentRotation = 0;
+    currentTeam = "blue";
+
+    blueChoice = null;
+    whiteChoice = null;
+
+    gameFinished = false;
 
     wheel.style.transition = "none";
     wheel.style.transform = "rotate(0deg)";
 
-    // 브라우저에 초기화 상태 적용
     wheel.offsetHeight;
 
     wheel.style.transition =
         "transform 5s cubic-bezier(.12,.65,.12,1)";
 
+    blueResult.textContent = "?";
+    whiteResult.textContent = "?";
+
+    blueStatus.textContent = "대기 중";
+    whiteStatus.textContent = "대기 중";
+
     result.textContent = "준비!";
-    guide.textContent = "돌리기 버튼을 눌러 보세요!";
+
+    winnerBox.classList.remove("show");
+
+    guide.textContent =
+        "청팀부터 돌려 보세요!";
+
+    spinBtn.disabled = false;
+
+    updateTurn();
+}
+
+/* =================================
+   폭죽 효과
+================================= */
+
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+
+let particles = [];
+let fireworksActive = false;
+let animationId = null;
+let fireworkTimer = null;
+
+function resizeCanvas() {
+
+    canvas.width = window.innerWidth *
+        Math.min(window.devicePixelRatio || 1, 2);
+
+    canvas.height = window.innerHeight *
+        Math.min(window.devicePixelRatio || 1, 2);
+
+    ctx.setTransform(
+        Math.min(window.devicePixelRatio || 1, 2),
+        0, 0,
+        Math.min(window.devicePixelRatio || 1, 2),
+        0, 0
+    );
+}
+
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+function createFirework() {
+
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight * 0.55 + 30;
+
+    const colors = [
+        "#ff3333",
+        "#ffd700",
+        "#00aaff",
+        "#ff69b4",
+        "#7fff00",
+        "#ffffff",
+        "#ff8800"
+    ];
+
+    const color =
+        colors[Math.floor(Math.random() * colors.length)];
+
+    const count = 65;
+
+    for (let i = 0; i < count; i++) {
+
+        const angle =
+            Math.PI * 2 * i / count;
+
+        const speed =
+            2 + Math.random() * 5;
+
+        particles.push({
+            x: x,
+            y: y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 1,
+            decay: 0.012 + Math.random() * 0.012,
+            color: color,
+            size: 2 + Math.random() * 3
+        });
+    }
+}
+
+function animateFireworks() {
+
+    if (!fireworksActive) return;
+
+    ctx.clearRect(
+        0, 0,
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    particles.forEach((p, index) => {
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        p.vy += 0.035;
+
+        p.vx *= 0.99;
+        p.vy *= 0.99;
+
+        p.life -= p.decay;
+
+        if (p.life <= 0) {
+            particles.splice(index, 1);
+            return;
+        }
+
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = p.color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    });
+
+    ctx.globalAlpha = 1;
+
+    animationId =
+        requestAnimationFrame(animateFireworks);
+}
+
+function startFireworks() {
+
+    stopFireworks();
+
+    fireworksActive = true;
+    particles = [];
+
+    createFirework();
+    createFirework();
+    createFirework();
+
+    animateFireworks();
+
+    let count = 0;
+
+    fireworkTimer = setInterval(() => {
+
+        createFirework();
+        count++;
+
+        if (count >= 10) {
+            clearInterval(fireworkTimer);
+        }
+
+    }, 500);
+
+    setTimeout(() => {
+        stopFireworks();
+    }, 7000);
+}
+
+function stopFireworks() {
+
+    fireworksActive = false;
+
+    clearInterval(fireworkTimer);
+
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+    }
+
+    particles = [];
+
+    ctx.clearRect(
+        0, 0,
+        window.innerWidth,
+        window.innerHeight
+    );
 }
 
 </script>
